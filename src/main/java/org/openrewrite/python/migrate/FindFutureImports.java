@@ -17,6 +17,7 @@ package org.openrewrite.python.migrate;
 
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
+import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.marker.SearchResult;
 import org.openrewrite.python.PythonIsoVisitor;
@@ -33,7 +34,7 @@ public class FindFutureImports extends Recipe {
     }
 
     @Override
-    public FindFutureImportsVisitor getVisitor() {
+    public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new FindFutureImportsVisitor();
     }
 
