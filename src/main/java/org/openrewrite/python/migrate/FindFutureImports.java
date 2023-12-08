@@ -40,8 +40,8 @@ public class FindFutureImports extends Recipe {
 
     private static class FindFutureImportsVisitor extends PythonIsoVisitor<ExecutionContext> {
         @Override
-        public J.Import visitImport(J.Import _import, ExecutionContext executionContext) {
-            J.Import im = super.visitImport(_import, executionContext);
+        public J.Import visitImport(J.Import _import, ExecutionContext ctx) {
+            J.Import im = super.visitImport(_import, ctx);
             J.Identifier target = (J.Identifier) im.getQualid().getTarget();
             if (target.getSimpleName().equals("__future__")) {
                 return SearchResult.found(im, "Future import");
