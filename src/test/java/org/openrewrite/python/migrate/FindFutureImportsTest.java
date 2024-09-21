@@ -15,8 +15,12 @@
  */
 package org.openrewrite.python.migrate;
 
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
+import org.openrewrite.python.PythonParser;
+import org.openrewrite.python.tree.Py;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
@@ -29,22 +33,31 @@ class FindFutureImportsTest implements RewriteTest {
         spec.recipe(new FindFutureImports());
     }
 
+    @BeforeAll
+    static void setup() {
+        // Prevent failures while PythonParser returns PlainText when remoting is unavailable
+        Assumptions.assumeTrue(PythonParser.builder().build().parse("int i = 1").findFirst().orElseThrow() instanceof Py.CompilationUnit);
+    }
+
     @DocumentExample
     @Test
     void findFutureImports() {
         rewriteRun(
           //language=python
-          python("""
-            from __future__ import print_function
-            class Foo:
-              def foo() :
-                print("hello")
-            """, """
-            /*~~(Future import)~~>*/from __future__ import print_function
-            class Foo:
-              def foo() :
-                print("hello")
-            """));
+          python(
+            """
+              from __future__ import print_function
+              class Foo:
+                def foo() :
+                  print("hello")
+              """,
+            """
+              /*~~(Future import)~~>*/from __future__ import print_function
+              class Foo:
+                def foo() :
+                  print("hello")
+              """
+          )
+        );
     }
-
 }
